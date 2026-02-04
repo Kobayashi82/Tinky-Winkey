@@ -17,12 +17,10 @@
 
 [README en Español](README_es.md)
 
-> This project is strictly for educational purposes as part of the 42 School curriculum. The code must be used only in controlled environments, such as virtual machines. Using keyloggers without proper authorization is illegal and unethical.
+> This project is strictly for educational purposes as part of the `42 School` curriculum. The code must be used only in controlled environments, such as virtual machines. Using keyloggers without proper authorization is illegal and unethical.
 
-## 🎯 Description
-
-This project implements a Windows service named ```tinky``` and a keylogger application named ```winkey```.  
-It is an educational 42 School project designed to understand Windows service architecture, keyboard capture mechanisms, and interaction with system processes.
+This project implements a Windows service named `tinky` and a keylogger application named `winkey`.  
+It is an educational `42 School` project designed to understand Windows service architecture, keyboard capture mechanisms, and interaction with system processes.
 
 ### 1. Service (svc.exe)
 
@@ -83,7 +81,7 @@ KEYSTROKES
 
 ## Security Notice
 
-This project is developed exclusively for educational purposes as part of the 42 School curriculum to understand Windows systems programming concepts. The implementation must be used only in isolated environments such as virtual machines.
+This project is developed exclusively for `educational` purposes as part of the `42 School` curriculum to understand Windows systems programming concepts. The implementation must be used only in isolated environments such as virtual machines.
 
 ## 📄 License
 

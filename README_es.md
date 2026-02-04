@@ -17,12 +17,10 @@
 
 [README in English](README.md)
 
-> Este proyecto es únicamente para fines educativos como parte del curriculum de 42 School. El código debe usarse solo en entornos controlados, como máquinas virtuales.  Usar keyloggers sin autorización apropiada es ilegal y poco ético.
+> Este proyecto es únicamente para fines educativos como parte del curriculum de `42 School`. El código debe usarse solo en entornos controlados, como máquinas virtuales.  Usar keyloggers sin autorización apropiada es ilegal y poco ético.
 
-## 🎯 Descripción
-
-Este proyecto implementa un servicio de Windows llamado ```tinky``` y una aplicación keylogger llamada ```winkey```.  
-Es un proyecto educativo de ```42 School``` diseñado para comprender la arquitectura de servicios de Windows, mecanismos de captura de teclado e interacción con procesos del sistema.
+Este proyecto implementa un servicio de Windows llamado `tinky` y una aplicación keylogger llamada `winkey`.  
+Es un proyecto educativo de `42 School` diseñado para comprender la arquitectura de servicios de Windows, mecanismos de captura de teclado e interacción con procesos del sistema.
 
 ### 1. Servicio (svc.exe)
 
@@ -83,7 +81,7 @@ PULSACIONES_TECLAS
 
 ## Aviso de Seguridad
 
-Este proyecto se desarrolla exclusivamente con fines educativos como parte del curriculum de ```42 School``` para entender conceptos de programación de sistemas Windows. La implementación debe usarse únicamente en entornos aislados como máquinas virtuales.
+Este proyecto se desarrolla exclusivamente con fines `educativos` como parte del curriculum de `42 School` para entender conceptos de programación de sistemas Windows. La implementación debe usarse únicamente en entornos aislados como máquinas virtuales.
 
 ## 📄 Licencia
 
