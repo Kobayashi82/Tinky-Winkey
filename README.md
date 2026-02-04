@@ -8,6 +8,11 @@
 
 </div>
 
+<div align="center">
+  <img src="/Tinky-Winkey.png">
+</div>
+
+
 # Tinky Winkey
 
 > Este proyecto es únicamente para fines educativos como parte del curriculum de 42 School. El código debe usarse solo en entornos controlados, como máquinas virtuales.  Usar keyloggers sin autorización apropiada es ilegal y poco ético.
