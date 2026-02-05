@@ -1,18 +1,24 @@
 *
 !.vscode
 !.vscode/**
+.vscode/launch.json
+.vscode/settings.json
+
 !doc
 !doc/**
 doc/tinky-winkey\ 2.0.pdf
 doc/*.iso
+
 !svc
 !svc/**
 svc/build
 svc/bin
+
 !winkey
 !winkey/**
 winkey/build
 winkey/bin
+
 !Makefile
 !build.bat
 !README.md
