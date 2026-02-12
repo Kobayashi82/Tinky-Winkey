@@ -9,7 +9,7 @@
 </div>
 
 <div align="center">
-  <img src="/Tinky-Winkey.png">
+  <img src="/images/Tinky-Winkey.jpg">
 </div>
 
 

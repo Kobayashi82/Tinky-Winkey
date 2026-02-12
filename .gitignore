@@ -9,6 +9,9 @@
 doc/tinky-winkey\ 2.0.pdf
 doc/*.iso
 
+!images
+!images/**
+
 !svc
 !svc/**
 svc/build
@@ -25,4 +28,3 @@ winkey/bin
 !README_es.md
 !.gitignore
 !LICENSE
-!Tinky-Winkey.png
