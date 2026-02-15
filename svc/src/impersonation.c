@@ -6,7 +6,7 @@
 /*   By: vzurera- <vzurera-@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 13:31:21 by vzurera-          #+#    #+#             */
-/*   Updated: 2025/07/15 18:05:15 by vzurera-         ###   ########.fr       */
+/*   Updated: 2026/02/15 12:02:09 by vzurera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,16 @@
 	#pragma region "GetProcessIdByName"
 
 		DWORD GetProcessIdByName(const char* name) {
-			HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-			PROCESSENTRY32 pe32 = { sizeof(pe32) };
-			if (Process32First(handle, &pe32)) do {
-				if (!_stricmp(pe32.szExeFile, name)) {
-					CloseHandle(handle);
-					return (pe32.th32ProcessID);
-				}
-			} while (Process32Next(handle, &pe32));
+			HANDLE			handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+			PROCESSENTRY32	pe32 = { sizeof(PROCESSENTRY32) };
+			if (Process32First(handle, &pe32)) {
+				do {
+					if (!_stricmp(pe32.szExeFile, name)) {
+						CloseHandle(handle);
+						return (pe32.th32ProcessID);
+					}
+				} while (Process32Next(handle, &pe32));
+			}
 			CloseHandle(handle);
 			return (0);
 		}
@@ -68,12 +70,14 @@
 				if (!GetTokenInformation(hToken2, TokenUser, pUser2, len2, &len2))												{ printf("[!] Failed to get token info for %s process\n", process2);		break; }
 
 				char name[256], domain[256];
-				DWORD nameLen = sizeof(name), domainLen = sizeof(domain); SID_NAME_USE sidType;
+				DWORD nameLen = sizeof(name), domainLen = sizeof(domain);
+				SID_NAME_USE sidType;
 				if (LookupAccountSidA(NULL, pUser1->User.Sid, name, &nameLen, domain, &domainLen, &sidType))					printf("Token:               %s", name); else printf("Token:               UNKNOWN");
 				nameLen = sizeof(name); domainLen = sizeof(domain);
 				if (LookupAccountSidA(NULL, pUser2->User.Sid, name, &nameLen, domain, &domainLen, &sidType))					printf("       %s\n", name); else printf("       UNKNOWN\n");
 
-				if (EqualSid(pUser1->User.Sid, pUser2->User.Sid)) { result = TRUE;
+				if (EqualSid(pUser1->User.Sid, pUser2->User.Sid)) {
+					result = TRUE;
 
 					// Integrity Level
 					DWORD intLen1 = 0, intLen2 = 0;
@@ -81,7 +85,7 @@
 					GetTokenInformation(hToken2, TokenIntegrityLevel, NULL, 0, &intLen2);
 					TOKEN_MANDATORY_LABEL *pIntegrity1 = (TOKEN_MANDATORY_LABEL*)malloc(intLen1);
 					TOKEN_MANDATORY_LABEL *pIntegrity2 = (TOKEN_MANDATORY_LABEL*)malloc(intLen2);
-					if (!pIntegrity1 || !pIntegrity2) { printf("Integrity Level: Memory allocation failed\n"); }
+					if (!pIntegrity1 || !pIntegrity2) printf("Integrity Level: Memory allocation failed\n");
 
 					if (pIntegrity1 && pIntegrity2 &&
 						GetTokenInformation(hToken1, TokenIntegrityLevel, pIntegrity1, intLen1, &intLen1) &&
@@ -135,7 +139,7 @@
 					GetTokenInformation(hToken2, TokenPrivileges, NULL, 0, &privLen2);
 					TOKEN_PRIVILEGES *priv1 = (TOKEN_PRIVILEGES*)malloc(privLen1);
 					TOKEN_PRIVILEGES *priv2 = (TOKEN_PRIVILEGES*)malloc(privLen2);
-					if (!priv1 || !priv2) { printf("Privileges:      Memory allocation failed\n"); }
+					if (!priv1 || !priv2) printf("Privileges:      Memory allocation failed\n");
 
 					if (priv1 && priv2 &&
 						GetTokenInformation(hToken1, TokenPrivileges, priv1, privLen1, &privLen1) &&
@@ -166,11 +170,11 @@
 	#pragma region "Impersonate"
 
 		HANDLE impersonate() {
-			HANDLE dup_token_handle = NULL;
-			HANDLE token_handle = NULL;
-			DWORD pid = GetProcessIdByName("winlogon.exe");
+			HANDLE	dup_token_handle = NULL;
+			HANDLE	token_handle = NULL;
+			DWORD	pid = GetProcessIdByName("winlogon.exe");
 
-			if (pid == 0) {
+			if (!pid) {
 				// Error finding winlogon.exe
 				ReportStatus(SERVICE_STOPPED, GetLastError(), 0);
 				CloseHandle(g_ServiceStopEvent);

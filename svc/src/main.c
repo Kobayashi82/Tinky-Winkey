@@ -6,7 +6,7 @@
 /*   By: vzurera- <vzurera-@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 13:00:34 by vzurera-          #+#    #+#             */
-/*   Updated: 2025/05/14 17:06:38 by vzurera-         ###   ########.fr       */
+/*   Updated: 2026/02/15 11:10:21 by vzurera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 	void WinkeyPath(char *Path) {
 		char *lastSlash;
+
 		if (!GetModuleFileName(NULL, Path, MAX_PATH) || !(lastSlash = strrchr(Path, '\\'))) return;
 		strcpy_s(lastSlash + 1, Path + MAX_PATH - (lastSlash + 1), "winkey.exe");
 	}
@@ -43,12 +44,30 @@
 		// Executed as a service
 		if (StartServiceCtrlDispatcher((SERVICE_TABLE_ENTRY[]) {{ Name, (LPSERVICE_MAIN_FUNCTION)ServiceMain }, { NULL, NULL }})) return (0);
 
-		// Executed as a process, check if it has administrator privileges
-		DWORD dwSize; HANDLE hToken; TOKEN_ELEVATION elevation = {0};
-		if (!(OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)
-			&& GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &dwSize)
-			&& (CloseHandle(hToken), elevation.TokenIsElevated)))
-			return (printf("\nAdministrator privileges are required\n"), 1);
+		DWORD dwSize;
+		HANDLE hToken;
+		TOKEN_ELEVATION elevation = {0};
+
+		// Open token
+		if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+			printf("\nFailed to open process token\n");
+			return (1);
+		}
+
+		// Get elevation info
+		if (!GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &dwSize)) {
+			CloseHandle(hToken);
+			printf("\nFailed to get token information\n");
+			return (1);
+		}
+
+		CloseHandle(hToken);
+
+		// Check if elevated
+		if (!elevation.TokenIsElevated) {
+			printf("\nAdministrator privileges are required\n");
+			return (1);
+		}
 
 		// Process actions
 		return (control(argc, argv));

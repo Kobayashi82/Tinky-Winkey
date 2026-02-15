@@ -6,7 +6,7 @@
 /*   By: vzurera- <vzurera-@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 13:31:13 by vzurera-          #+#    #+#             */
-/*   Updated: 2025/05/14 13:38:01 by vzurera-         ###   ########.fr       */
+/*   Updated: 2026/02/15 12:10:13 by vzurera-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,17 @@
 					if (hEvent) {
 						// Signal the event so the client knows it should terminate
 						SetEvent(hEvent);
-						
+
 						// Wait a reasonable time for the client to exit gracefully
 						DWORD waitResult = WaitForSingleObject(ProcessInfo.hProcess, 2000);
-						
+
 						// Close the termination event handle
 						CloseHandle(hEvent);
-						
+
 						// If the process did not exit after waiting, force termination
 						if (waitResult == WAIT_TIMEOUT) TerminateProcess(ProcessInfo.hProcess, 0);
 					} else TerminateProcess(ProcessInfo.hProcess, 0);
-					
+
 					CloseHandle(ProcessInfo.hProcess);
 					CloseHandle(ProcessInfo.hThread);
 					ProcessRunning = FALSE;
@@ -93,18 +93,20 @@
 		#pragma region "Kill All"
 
 			int KillAllProcesses(char *name) {
-				HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-				PROCESSENTRY32 pe32 = { sizeof(pe32) };
+				HANDLE			handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+				PROCESSENTRY32	pe32 = { sizeof(PROCESSENTRY32) };
 
-				if (Process32First(handle, &pe32)) do {
-					if (!_stricmp(pe32.szExeFile, name)) {
-						HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
-						if (hProc) {
-							TerminateProcess(hProc, 0);
-							CloseHandle(hProc);
+				if (Process32First(handle, &pe32)) {
+					do {
+						if (!_stricmp(pe32.szExeFile, name)) {
+							HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
+							if (hProc) {
+								TerminateProcess(hProc, 0);
+								CloseHandle(hProc);
+							}
 						}
-					}
-				} while (Process32Next(handle, &pe32));
+					} while (Process32Next(handle, &pe32));
+				}
 
 				CloseHandle(handle);
 				return (0);
@@ -132,7 +134,10 @@
 			BOOL keepRunning = TRUE;
 			while (keepRunning) {
 				// Check if service stop has been requested
-				if (WaitForSingleObject(g_ServiceStopEvent, 0) == WAIT_OBJECT_0) { keepRunning = FALSE; break; }
+				if (WaitForSingleObject(g_ServiceStopEvent, 0) == WAIT_OBJECT_0) {
+					keepRunning = FALSE;
+					break;
+				}
 
 				// If the process is already running, check its state
 				if (ProcessRunning) {
@@ -142,8 +147,13 @@
 							CloseHandle(ProcessInfo.hProcess);
 							CloseHandle(ProcessInfo.hThread);
 							ProcessRunning = FALSE;
-						} else { Sleep(1000); continue; }
-					} else ProcessRunning = FALSE;
+						} else {
+							Sleep(1000);
+							continue;
+						}
+					} else {
+						ProcessRunning = FALSE;
+					}
 				}
 
 				// If we get here, we need to start the process
@@ -176,7 +186,7 @@
 					ReportStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
 
 					// Signal the event to stop the main loop
-					if (g_ServiceStopEvent)  SetEvent(g_ServiceStopEvent);
+					if (g_ServiceStopEvent) SetEvent(g_ServiceStopEvent);
 
 					// Terminate the process if it's running
 					CloseProcess();
@@ -190,7 +200,7 @@
 			void WINAPI ServiceMain(DWORD dwArgc, LPSTR *lpszArgv) { (void) dwArgc; (void) lpszArgv;
 				// Register the service control handler
 				StatusHandle = RegisterServiceCtrlHandler(Name, ServiceCtrl);
-				if (StatusHandle == NULL) return;
+				if (!StatusHandle) return;
 
 				// Initialize the service status
 				ServiceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
@@ -202,7 +212,11 @@
 
 				// Create an event to signal service stop
 				g_ServiceStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-				if (g_ServiceStopEvent == NULL) { ReportStatus(SERVICE_STOPPED, GetLastError(), 0); return; }
+				if (!g_ServiceStopEvent) {
+					ReportStatus(SERVICE_STOPPED, GetLastError(), 0);
+					return;
+				}
+
 				ReportStatus(SERVICE_RUNNING, NO_ERROR, 0);
 
 				// Manage winkey.exe
